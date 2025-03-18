@@ -1,13 +1,9 @@
 import os
-import re
-import sys
 import time
-import shutil
 import pickle
 import random
-import requests
 import pandas as pd
-from time import sleep
+from datetime import datetime
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -19,7 +15,11 @@ from selenium.webdriver.support import expected_conditions as EC
 
 target_classes = "x78zum5 xdt5ytf xwrv7xz x1n2onr6 xph46j xfcsdxf xsybdxg x1bzgcud"
 instagram_url = "https://www.instagram.com"
+
+# Link to the hashtag page to crawl
 instagram_url_with_hashtag = "https://www.instagram.com/explore/search/keyword/?q=%23streetwearfashion"
+
+# Number of times to scroll down
 scroll_limit = 500
 today = datetime.now().strftime("%Y-%m-%d")
 
@@ -102,7 +102,7 @@ def crawling_html(driver, image_urls):
             )
             random_sleep(3,4)
             
-            if i % 3 == 0:
+            if i % 10 == 0:
                 html = driver.page_source
                 image_urls = get_images_from_html(html, image_urls)
                 print(f"Scrolled {i} times.")

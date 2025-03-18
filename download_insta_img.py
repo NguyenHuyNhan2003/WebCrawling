@@ -7,6 +7,8 @@ from io import BytesIO
 import cv2
 import numpy as np
 from datetime import datetime
+import shutil
+import sys
 
 csv_file = "image_urls_3_9_2025.csv"
 today = datetime.now().strftime("%Y-%m-%d")
@@ -14,6 +16,12 @@ today = datetime.now().strftime("%Y-%m-%d")
 # Create a folder to store images
 folder_name = f"instagram img {today}"
 os.makedirs(folder_name, exist_ok=True)
+
+# Create sub-folders for human and no human images
+human_folder = os.path.join(folder_name, "human")
+no_human_folder = os.path.join(folder_name, "no_human")
+os.makedirs(human_folder, exist_ok=True)
+os.makedirs(no_human_folder, exist_ok=True)
 
 # Read CSV file
 df = pd.read_csv(csv_file)
@@ -35,6 +43,11 @@ def detect_human(image_path):
     rects, _ = hog.detectMultiScale(gray, winStride=(4, 4), padding=(8, 8), scale=1.05)
 
     return len(rects) > 0  # Return True if people are detected
+
+# Function to truncate long text
+def truncate_text(text, max_length=50):
+    """Truncate text to a maximum length and add ellipsis if necessary."""
+    return (text[:max_length] + "...") if len(text) > max_length else text
 
 # Loop through each URL and download the image
 for index, row in df.iterrows():
@@ -71,23 +84,34 @@ for index, row in df.iterrows():
                 image = image.convert("RGB")
                 image.save(jpg_image_name, "JPEG", quality=95)
                 image_path = jpg_image_name
-                print(f"Converted & Saved: {jpg_image_name}")
+                status = f"Converted & Saved: {os.path.basename(jpg_image_name)}"
             else:
                 # Save original image
                 with open(original_image_name, 'wb') as file:
                     for chunk in response.iter_content(1024):
                         file.write(chunk)
                 image_path = original_image_name
-                print(f"Downloaded: {original_image_name}")
+                status = f"Downloaded: {os.path.basename(original_image_name)}"
 
             # Check if the image contains a human
             if detect_human(image_path):
-                print(f"Human detected in {image_path}")
+                status += " | Human detected"
+                # Move image to 'human' folder
+                shutil.move(image_path, os.path.join(human_folder, os.path.basename(image_path)))
             else:
-                print(f"No human detected in {image_path}")
+                status += " | No human detected"
+                # Move image to 'no_human' folder
+                shutil.move(image_path, os.path.join(no_human_folder, os.path.basename(image_path)))
 
         else:
-            print(f"Failed to download {image_url}")
+            status = f"Failed to download {truncate_text(image_url)}"
 
     except Exception as e:
-        print(f"Error downloading {image_url}: {e}")
+        status = f"Error downloading {truncate_text(image_url)}: {e}"
+    
+    # Print the status on the same line
+    sys.stdout.write(f"\r{status.ljust(80)}")
+    sys.stdout.flush()
+
+# Print a newline at the end to avoid overwriting the final status
+print()
