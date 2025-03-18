@@ -13,6 +13,9 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+root_csv_path = "./CSV Folder/"
+root_img_path = "./Image Folder/" 
+
 target_classes = "x78zum5 xdt5ytf xwrv7xz x1n2onr6 xph46j xfcsdxf xsybdxg x1bzgcud"
 instagram_url = "https://www.instagram.com"
 
@@ -179,6 +182,6 @@ if '__main__' == __name__:
     print(f"{len(df)} image URLs extracted.")
 
     # save the DataFrame to a CSV file
-    df.to_csv(f"image_urls_{today}.csv", index=False)
+    df.to_csv(f"{root_csv_path}image_urls_{today}.csv", index=False)
     print("Image URLs saved to CSV.")
 

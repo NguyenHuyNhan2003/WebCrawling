@@ -10,11 +10,13 @@ from datetime import datetime
 import shutil
 import sys
 
-csv_file = "image_urls_3_9_2025.csv"
+root_csv_path = "./CSV Folder/"
+root_img_path = "./Image Folder/" 
+csv_file = f"{root_csv_path}image_urls_3_9_2025.csv"
 today = datetime.now().strftime("%Y-%m-%d")
 
 # Create a folder to store images
-folder_name = f"instagram img {today}"
+folder_name = f"{root_img_path}instagram img {today}"
 os.makedirs(folder_name, exist_ok=True)
 
 # Create sub-folders for human and no human images

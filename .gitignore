@@ -1,3 +1,6 @@
 .venv/
 chromedriver.exe
 *.code-workspace
+CSV Folder/
+Image Folder/
+my_insta_cookie.plk
